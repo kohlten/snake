@@ -1,6 +1,5 @@
 
 OUT = snake
-#OUT = cmake-build-debug/platformer_c
 LIB = src/lib
 
 CFILES := src/main.c \
