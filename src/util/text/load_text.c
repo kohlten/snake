@@ -1,6 +1,7 @@
 #include "util/text/text.h"
 #include "libft.h"
 #include <string.h>
+#include <stdio.h>
 
 /*SDL_Texture *loadFromRenderedText(SDL_Renderer *renderer, char *text, TTF_Font *font, SDL_Color color)
 {

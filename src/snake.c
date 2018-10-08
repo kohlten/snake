@@ -1,4 +1,7 @@
 #include "snake.h"
+#include <stdio.h>
+
+static int frame = 0;
 
 t_snake *new_snake(int size)
 {
@@ -13,7 +16,8 @@ t_snake *new_snake(int size)
 	snake->direction = SNAKE_STOP;
 	snake->size = size;
     snake->tail = ft_lstnew(&snake->pos, sizeof(t_vector2f));
-    snake->reset = false;
+    snake->move_tail = NULL;
+    snake->increase_tail = NULL;
 	return snake;
 }
 
@@ -41,37 +45,26 @@ void update_snake(t_snake *snake)
         default:
             break;
 	}
+    frame++;
 }
 
 void increase_size_snake(t_snake *snake)
 {
-	t_list *tail;
-
-	snake->tail_length++;
-	tail = snake->tail;
-	if (tail)
-	{
-		while (tail->next)
-			tail = tail->next;
-		tail->next = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
-		tail = tail->next;
-        tail->prev = tail;
-	}
-	else
-		snake->tail = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
+    if (snake->increase_tail == NULL)
+    {
+        snake->increase_tail = snake->tail;
+    }
+    snake->tail_length++;
+	snake->increase_tail->next = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
+	snake->increase_tail = snake->increase_tail->next;
 }
 
 void move_tail_back(t_snake *snake)
 {
-    static t_list *current = NULL;
-
-    if (current == NULL || snake->reset)
-    {
-        current = snake->tail;
-        snake->reset = false;
-    }
-    ft_memcpy(current->content, &snake->pos, sizeof(t_vector2f));
-    current = current->next;
+    if (!snake->move_tail)
+        snake->move_tail = snake->tail;
+    ft_memcpy(snake->move_tail->content, &snake->pos, sizeof(t_vector2f));
+    snake->move_tail = snake->move_tail->next;
 }
 
 void display_snake(t_snake *snake, t_window *window)
@@ -80,7 +73,6 @@ void display_snake(t_snake *snake, t_window *window)
 	t_list *tail;
 	t_vector2f *pos;
     int i = 0;
-
 
     rect.w = snake->size - 1;
     rect.h = snake->size - 1;
@@ -104,18 +96,19 @@ void display_snake(t_snake *snake, t_window *window)
     SDL_RenderFillRect(window->SDLrenderer, &rect);
 }
 
-void reset_snake(t_snake *snake)
+void reset_snake(t_snake *snake, bool done)
 {
     t_list *tail;
     t_list *next;
     int i = 0;
 
-    snake->reset = true;
+    snake->move_tail = NULL;
+    snake->increase_tail = NULL;
     ft_bzero(&snake->pos, sizeof(t_vector2f));
     change_direction_snake(snake, SNAKE_STOP);
     if (snake->tail_length == 0)
         return;
-    tail = snake->tail->next;
+    tail = snake->tail;
     next = tail->next;
     while (tail)
     {
@@ -126,7 +119,10 @@ void reset_snake(t_snake *snake)
             next = tail->next;
         i++;
     }
-    snake->tail->next = NULL;
+    if (!done)
+        snake->tail = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
+    else
+        snake->tail = NULL;
     snake->tail_length = 0;
 }
 
@@ -136,7 +132,7 @@ void contain_snake(t_snake *snake, t_window *window)
         snake->pos.x < 0              ||
         snake->pos.y >= window->height ||
         snake->pos.y < 0)
-        reset_snake(snake);
+        reset_snake(snake, false);
 }
 
 void hit_tail_snake(t_snake *snake)
@@ -156,7 +152,7 @@ void hit_tail_snake(t_snake *snake)
             nodes++;
         if (nodes > 1)
         {
-            reset_snake(snake);
+            reset_snake(snake, false);
             break;
         }
         tail = tail->next;
@@ -166,6 +162,8 @@ void hit_tail_snake(t_snake *snake)
 
 void delete_snake(t_snake *snake)
 {
-    reset_snake(snake);
-	free(snake);
+    reset_snake(snake, true);
+	free(snake->tail->content);
+    free(snake->tail);
+    free(snake);
 }

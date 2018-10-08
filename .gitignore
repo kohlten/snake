@@ -1,0 +1,5 @@
+snake
+dependencies
+obj
+*.o
+*.a

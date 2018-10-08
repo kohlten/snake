@@ -1,5 +1,6 @@
 #include "util/text/text.h"
 #include <string.h>
+#include <stdio.h>
 
 int init_font(void)
 {

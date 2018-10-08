@@ -133,14 +133,14 @@ void run(t_game *game)
                     case SDLK_d:
                         change_direction_snake(game->snake, SNAKE_RIGHT);
                         break;
-                    case SDLK_i:
-                        increase_size_snake(game->snake);
-                        break;
                     case SDLK_r:
-                        reset_snake(game->snake);
+                        reset_snake(game->snake, false);
                         break;
                     case SDLK_p:
                         game->paused = !game->paused;
+                        break;
+                    case SDLK_ESCAPE:
+                        done = true;
                         break;
                     default:
                         break;

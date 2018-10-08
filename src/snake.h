@@ -25,7 +25,8 @@ typedef struct s_snake
 	Snake_Direction	direction;
 	SDL_Rect		snakeRect;
 	t_list			*tail;
-    bool            reset;
+	t_list			*move_tail;
+	t_list			*increase_tail;
 } t_snake;
 
 t_snake *new_snake(int size);
@@ -35,7 +36,7 @@ void delete_snake(t_snake *snake);
 void increase_size_snake(t_snake *snake);
 void move_tail_back(t_snake *snake);
 void display_snake(t_snake *snake, t_window *window);
-void reset_snake(t_snake *snake);
+void reset_snake(t_snake *snake, bool done);
 void contain_snake(t_snake *snake, t_window *window);
 void hit_tail_snake(t_snake *snake);
 #endif

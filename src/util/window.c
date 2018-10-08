@@ -19,6 +19,7 @@ t_window *new_window(int width, int height)
         printf("Could not malloc the window!\n");
         return NULL;
     }
+    SDL_GetCurrentDisplayMode(0, &dm);
     window->SDLwindow = SDL_CreateWindow("Snake",
         (dm.w / 2) -  (width / 2), (dm.h / 2) - (height / 2), width, height, 0);
     if (!window->SDLwindow)
