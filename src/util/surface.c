@@ -78,31 +78,3 @@ void wipe_surface(SDL_Surface *surface, int color)
 	SDL_memset(surface->pixels, color, surface->h * surface ->pitch);
 	SDL_UnlockSurface(surface);
 }
-
-SDL_Texture *loadFromRenderedText(SDL_Renderer *renderer, char *text, TTF_Font *font, SDL_Color color)
-{
-	SDL_Surface *text_surface;
-	SDL_Texture *text_texture;
-
-	if (!text || !font || !renderer)
-		return NULL;
-	if (strcmp(text, "") == 0)
-	{
-		printf("loadFromRenderedText Error: Cannot create a font with no text!\n");
-		return NULL;
-	}
-	text_surface = TTF_RenderText_Solid(font, text, color);
-	if (!text_surface)
-	{
-		printf("Failed to render text to surface! SDL_tff Error: %s\n", TTF_GetError());
-		return NULL;
-	}
-	text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-	if (!text_texture)
-	{
-		printf("Failed to create texture! SDL Error: %s\n", SDL_GetError());
-		return NULL;
-	}
-	SDL_FreeSurface(text_surface);
-	return text_texture;
-}

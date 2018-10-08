@@ -54,23 +54,25 @@ int init_objects(t_game *game)
 static void update(t_game *game)
 {
     int fps;
-    char *num;
+    //char *num;
 
     limit_fps(60);
     fps = calculate_fps();
     if (fps != -1)
-    {
+        printf("%d\n", fps);
+    /*{
+
         num = ft_itoa(fps);
         if (game->fps_texture)
             SDL_DestroyTexture(game->fps_texture);
-        game->fps_texture = loadFromRenderedText(game->window->SDLrenderer, num, game->font, (SDL_Color){255, 255, 255});
+        game->fps_texture = loadFromRenderedText(game->window->SDLrenderer, num, game->font, (SDL_Color){255, 255, 255, 255});
         free(num);
     }
     num = ft_itoa(game->snake->tail_length);
     if (game->tail_amount_texture)
             SDL_DestroyTexture(game->tail_amount_texture);
-    game->tail_amount_texture = loadFromRenderedText(game->window->SDLrenderer, num, game->font, (SDL_Color){255, 255, 255});
-    free(num);
+    game->tail_amount_texture = loadFromRenderedText(game->window->SDLrenderer, num, game->font, (SDL_Color){255, 255, 255, 255});
+    free(num);*/
     if (!game->paused)
     {
         if (game->snake->pos.x == game->food->pos.x && game->snake->pos.y == game->food->pos.y)
@@ -94,12 +96,12 @@ static void display(t_game *game)
     SDL_RenderClear(game->window->SDLrenderer);
     display_food(game->food, game->window);
     display_snake(game->snake, game->window);
-    if (game->fps_texture)
+    /*if (game->fps_texture)
         SDL_RenderCopy(game->window->SDLrenderer, game->fps_texture, NULL, 
         &(SDL_Rect){0, 0, 20, 25});
     if (game->tail_amount_texture)
         SDL_RenderCopy(game->window->SDLrenderer, game->tail_amount_texture, NULL, 
-        &(SDL_Rect){game->window->width - 20, 0, 20, 25});
+        &(SDL_Rect){game->window->width - 20, 0, 20, 25});*/
     SDL_RenderPresent(game->window->SDLrenderer);
     game->frames++;
 }

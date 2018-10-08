@@ -39,7 +39,7 @@ t_window *new_window(int width, int height)
         printf("Could not initialize SDL_Image! SDL_image Error: %s\n", IMG_GetError());
         return NULL;
     }
-    if (TTF_Init() == -1)
+    if (init_font() == -1)
     {
         printf("Could not initialize SDL_ttf! SDL_ttf Error: %s\n", TTF_GetError());
         return NULL;

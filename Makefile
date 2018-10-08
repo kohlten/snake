@@ -9,7 +9,10 @@ src/food.c \
 src/util/fps.c \
 src/util/surface.c \
 src/util/draw.c \
-src/util/window.c
+src/util/window.c \
+src/util/text/load_text.c \
+src/util/text/render_text.c \
+src/util/text/text.c
 
 OFILES := $(patsubst src/%.c, obj/%.o, $(CFILES))
 SDL2IMAGE = dependencies/SDL2_image/.libs/libSDL2_image.a
@@ -43,7 +46,7 @@ PLATFORM_DEPENDENCIES = -lX11 -lXext -lasound -lpthread -ldl -lm -lsndio -lcairo
 						-lxkbcommon -lfreetype
 endif
 
-CFLAGS = -g -fsanitize=address -I src -I dependencies/libft/include -I dependencies/SDL2/include -I dependencies/SDL2_image/ -I dependencies/SDL2_tff -I dependencies/libsodium/src/libsodium/include
+CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror -I src -I dependencies/libft/include -I dependencies/SDL2/include -I dependencies/SDL2_image/ -I dependencies/SDL2_tff -I dependencies/libsodium/src/libsodium/include
 
 all: dependencies $(OFILES)
 	@echo "CC $(CFLAGS) -o $(OUT) $(PLATFORM_DEPENDENCIES) $(LIBS) $(OFILES)"
@@ -65,8 +68,9 @@ $(SDL2TFF):
 
 $(SDL2):
 	@echo "BUILDING SDL2"
-	-@git clone https://github.com/davidsiaw/SDL2.git dependencies/SDL2 
-	@cd dependencies/SDL2 && mkdir build && cd build && cmake .. && make 
+	-@git clone https://github.com/davidsiaw/SDL2.git dependencies/SDL2
+	-@cd dependencies/SDL2 && mkdir build
+	-@cd dependencies/SDL2/build && cmake .. && make 
 
 $(LIBFT):
 	@echo "BUILDING LIBFT"
@@ -90,6 +94,7 @@ run:
 obj:
 	-@mkdir obj
 	-@mkdir obj/util
+	-@mkdir obj/util/text
 	-@mkdir dependencies
 
 clean:
