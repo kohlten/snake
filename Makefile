@@ -58,29 +58,23 @@ dependencies: obj $(SDL2) $(SDL2IMAGE) \
 
 $(SDL2IMAGE):
 	@echo "BUILDING SDL2IMAGE"
-	-@git clone https://github.com/davidsiaw/SDL2_image.git dependencies/SDL2_image 
 	@cd dependencies/SDL2_image && sh autogen.sh && ./configure && make 
 
 $(SDL2TFF):
 	@echo "BUILDING SDL2TFF"
-	-@git clone https://github.com/davidsiaw/SDL2_ttf.git dependencies/SDL2_tff 
 	@cd dependencies/SDL2_tff && sh autogen.sh && ./configure && make 
 
 $(SDL2):
 	@echo "BUILDING SDL2"
-	-@git clone https://github.com/davidsiaw/SDL2.git dependencies/SDL2
 	-@cd dependencies/SDL2 && mkdir build
 	-@cd dependencies/SDL2/build && cmake .. && make 
 
 $(LIBFT):
 	@echo "BUILDING LIBFT"
-	-@git clone https://github.com/kohlten/libft.git dependencies/libft
 	@cd dependencies/libft && make
 
 $(SODIUM):
 	@echo "BUILDING LIBSODIUM"
-	-@git clone https://github.com/jedisct1/libsodium.git dependencies/libsodium
-	@cd dependencies/libsodium && git checkout stable
 	@cd dependencies/libsodium && sh autogen.sh && ./configure && make
 
 obj/%.o: src/%.c
