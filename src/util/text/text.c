@@ -6,9 +6,10 @@ int init_font(void)
 {
 	if (!TTF_WasInit())
 	{
-		if (!TTF_Init())
+		if (TTF_Init() == -1)
 		{
-			printf("ERROR: Failed to initialize TTF!\n"); 
+			printf("ERROR: Failed to initialize TTF!\n");
+			return -1;
 		}
 	}
 	else
@@ -19,10 +20,18 @@ int init_font(void)
 	return 0;
 }
 
-void change_text_string(t_text *text, char *new)
+t_text *change_text_string(t_text *text, SDL_Renderer *renderer, char *new)
 {
-	if (text->dynamic)
-		text->string = strdup(new);
-	else
-		printf("WARNING: Cannot change the string of a static text!\n");
+	if (!text)
+	{
+		printf("ERROR: Cannot change the text of a null text!\n");
+		return NULL;
+	}
+	if (text->texture)
+		SDL_DestroyTexture(text->texture);
+	text->texture = load_from_rendered_text(renderer, new, text->font, text->color);
+	if (!text->texture)
+		printf("WANRING: Failed to set the new text!\n");
+	SDL_QueryTexture(text->texture, NULL, NULL, &text->size.x, &text->size.y);
+	return text;
 }

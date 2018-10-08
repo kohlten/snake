@@ -46,7 +46,7 @@ PLATFORM_DEPENDENCIES = -lX11 -lXext -lasound -lpthread -ldl -lm -lsndio -lcairo
 						-lxkbcommon -lfreetype
 endif
 
-CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror -I src -I dependencies/libft/include -I dependencies/SDL2/include -I dependencies/SDL2_image/ -I dependencies/SDL2_tff -I dependencies/libsodium/src/libsodium/include
+CFLAGS = -g -Wall -Wextra -Werror -I src -I dependencies/libft/include -I dependencies/SDL2/include -I dependencies/SDL2_image/ -I dependencies/SDL2_tff -I dependencies/libsodium/src/libsodium/include
 
 all: dependencies $(OFILES)
 	@echo "CC $(CFLAGS) -o $(OUT) $(PLATFORM_DEPENDENCIES) $(LIBS) $(OFILES)"

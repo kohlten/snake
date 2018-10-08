@@ -7,23 +7,23 @@
 #include "util/fps.h"
 #include "util/window.h"
 #include "util/surface.h"
+#include "util/text/text.h"
 
 #include "food.h"
 #include "snake.h"
 
 #define CELL_SIZE 40
 
-// CLEAN ME
 typedef struct s_game
 {
 	t_window	*window;
 	long		frames;
 	TTF_Font	*font;
-	SDL_Texture *fps_texture;
-	SDL_Texture *tail_amount_texture;
-	t_food *food;
-	t_snake *snake;
-	bool paused;
+	t_text		*fps_text;
+	t_text		*tail_amount_text;
+	t_food 		*food;
+	t_snake 	*snake;
+	bool 		paused;
 } t_game;
 
 t_game *create_game();

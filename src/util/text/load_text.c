@@ -3,18 +3,13 @@
 #include <string.h>
 #include <stdio.h>
 
-/*SDL_Texture *loadFromRenderedText(SDL_Renderer *renderer, char *text, TTF_Font *font, SDL_Color color)
+SDL_Texture *load_from_rendered_text(SDL_Renderer *renderer, char *text, TTF_Font *font, SDL_Color color)
 {
 	SDL_Surface *text_surface;
 	SDL_Texture *text_texture;
 
 	if (!text || !font || !renderer)
 		return NULL;
-	if (strcmp(text, "") == 0)
-	{
-		printf("loadFromRenderedText Error: Cannot create a font with no text!\n");
-		return NULL;
-	}
 	text_surface = TTF_RenderText_Solid(font, text, color);
 	if (!text_surface)
 	{
@@ -29,7 +24,7 @@
 	}
 	SDL_FreeSurface(text_surface);
 	return text_texture;
-}*/
+}
 
 TTF_Font *load_font(char *name, int size)
 {
@@ -50,59 +45,71 @@ void free_text(t_text *text)
 {
 	if (text->texture)
 		SDL_DestroyTexture(text->texture);
-	if (text->font)
-		TTF_CloseFont(text->font);
 	if (text->string)
 		free(text->string);
 	free(text);
 	text = NULL;
 }
 
-t_text *new_text_font(char *string, SDL_Renderer *renderer, char *font_name, int size)
+t_text *new_text_font(char *string, SDL_Renderer *renderer, char *font_name, int size, SDL_Color color, t_vector2i position)
 {
 	t_text *text;
-	char *tmp;
 
-	if (!font_name)
+	if (!font_name || !renderer)
 		return NULL;
+	if (!string)
+		printf("WARNING: Creating text with empty string!\n");
 	text = ft_memalloc(sizeof(t_text));
 	if (!text)
 		return NULL;
-	tmp = font_name;
-	while (tmp && *tmp!= '.')
-		tmp++;
-	if (strcmp(font_name, ".ttf") == 0)
+	text->font = load_font(font_name, size);
+	if (!text->font)
 	{
-		text->dynamic = false;
-		text->font = load_font(font_name, size);
-		if (!text->font)
-		{
-			free_text(text);
-			return NULL;
-		}
+		free_text(text);
+		return NULL;
 	}
+	if (strcmp(string, "") != 0)
+		text = change_text_string(text, renderer, string);
 	else
 	{
-		if (!renderer)
-		{
-			printf("WARNING: Cannot create dynamic text without the SDL Renderer!\n");
-			free_text(text);
-			return NULL;
-		}
-		text->dynamic = true;
-		text->font = NULL;
-		text->texture = load_image_texture(font_name, renderer);
-		if (!text->texture)
-		{
-			free_text(text);
-			return NULL;
-		}
+		printf("ERROR: Trying to create a text with an empty string!\n");
+		free_text(text);
+		return NULL;
 	}
-	text->string = strdup(string);
+	text->color = color;
+	text->position = position;
 	return text;
 }
 
-/*t_text *new_text(char *text, SDL_Texture *font, TTF_Font *font)
+t_text *new_text(char *string, SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, t_vector2i position)
 {
-	return NULL;
-}*/
+	t_text *text;
+
+	if (!renderer || !font)
+	{
+		printf("ERROR: Renderer or font null!\n");
+		return NULL;
+	}
+	if (!string)
+		printf("WARNING: Creating text with empty string!\n");
+	text = ft_memalloc(sizeof(t_text));
+	if (!text)
+		return NULL;
+	text->font = font;
+	if (!text->font)
+	{
+		free_text(text);
+		return NULL;
+	}
+	if (strcmp(string, "") != 0)
+		text = change_text_string(text, renderer, string);
+	else
+	{
+		printf("ERROR: Trying to create a text with an empty string!\n");
+		free_text(text);
+		return NULL;
+	}
+	text->color = color;
+	text->position = position;
+	return text;
+}
