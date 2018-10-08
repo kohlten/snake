@@ -30,7 +30,7 @@ int init_objects(t_game *game)
     int start_time;
 
     start_time = SDL_GetTicks();
-    game->fps_text = new_text_font("0", game->window->SDLrenderer, "FreeMono.ttf", 20,
+    game->fps_text = new_text_font("0", game->window->SDLrenderer, "fonts/FreeMono.ttf", 20,
         (SDL_Color){255, 255, 255, 255}, (t_vector2i){0, 0});
     if (!game->fps_text)
         return -1;
