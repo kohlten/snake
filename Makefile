@@ -67,7 +67,7 @@ $(SDL2TFF):
 $(SDL2):
 	@echo "BUILDING SDL2"
 	-@cd dependencies/SDL2 && mkdir build
-	-@cd dependencies/SDL2/build && cmake .. && make 
+	@cd dependencies/SDL2/build && cmake .. && make 
 
 $(LIBFT):
 	@echo "BUILDING LIBFT"
