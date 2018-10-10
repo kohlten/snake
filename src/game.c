@@ -28,14 +28,18 @@ t_game *create_game()
 int init_objects(t_game *game)
 {
     int start_time;
+	t_text *text;
 
     start_time = SDL_GetTicks();
-    game->fps_text = new_text_font("0", game->window->SDLrenderer, "fonts/FreeMono.ttf", 20,
+	game->font = load_font("../fonts/FreeMono.ttf", 20);
+	if (!game->font)
+		return -1;
+    game->fps_text = new_text_font("0", game->window->SDLrenderer, game->font,
         (SDL_Color){255, 255, 255, 255}, (t_vector2i){0, 0});
     if (!game->fps_text)
         return -1;
-    game->tail_amount_text = new_text("0", game->window->SDLrenderer, game->fps_text->font,
-        (SDL_Color){255, 255, 255, 255}, (t_vector2i){game->window->width - 50, 0});
+    //game->tail_amount_text = new_text_font("0", game->window->SDLrenderer, game->font,
+    //    (SDL_Color){255, 255, 255, 255}, (t_vector2i){game->window->width - 50, 0});
     if (!game->tail_amount_text)
         return -1;
     game->food = new_food(CELL_SIZE);
@@ -59,15 +63,15 @@ static void update(t_game *game)
 
     limit_fps(60);
     fps = calculate_fps();
-    if (fps != -1)
+    /*if (fps != -1)
     {
         num = ft_itoa(fps);
         game->fps_text = change_text_string(game->fps_text, game->window->SDLrenderer, num);
         free(num);
-    }
-    num = ft_itoa(game->snake->tail_length);
+    }*/
+    /*num = ft_itoa(game->snake->tail_length);
     game->tail_amount_text = change_text_string(game->tail_amount_text, game->window->SDLrenderer, num);
-    free(num);
+    free(num);*/
     if (!game->paused)
     {
         if (game->snake->pos.x == game->food->pos.x && game->snake->pos.y == game->food->pos.y)
@@ -92,7 +96,7 @@ static void display(t_game *game)
     display_food(game->food, game->window);
     display_snake(game->snake, game->window);
     render_text(game->fps_text, game->window->SDLrenderer, NULL);
-    render_text(game->tail_amount_text, game->window->SDLrenderer, NULL);
+    //render_text(game->tail_amount_text, game->window->SDLrenderer, NULL);
     SDL_RenderPresent(game->window->SDLrenderer);
     game->frames++;
 }
