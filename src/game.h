@@ -1,21 +1,29 @@
-#ifndef PLATFORMER_H
-#define PLATFORMER_H
+/**
+ * @defgroup Game
+ * @{
+ */
 
-#include <stdbool.h>
+#ifndef GAME_H
+#define GAME_H
 
-#include "libft.h"
-#include "util/fps.h"
-#include "util/window.h"
-#include "util/surface.h"
-#include "util/text/text.h"
+#include <stdbool.h> // bool
 
-#include "food.h"
-#include "snake.h"
+#include "util/fps.h" // t_fps
+#include "util/window.h" // t_window
+#include "util/text/text.h" // t_text
 
+#include "food.h" // t_food
+#include "snake.h" // t_snake
+
+/** How large each cell is in pixels */
 #define CELL_SIZE 40
 
+/**
+ * Game struct that holds every object and data of the game.
+ */
 typedef struct s_game
 {
+    /** Window struct */
 	t_window	*window;
 	long		frames;
 	TTF_Font	*font;
@@ -33,3 +41,7 @@ void clean_window(t_window *window);
 void clean_game(t_game *game);
 
 #endif
+
+/**
+ * @}
+ */

@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <stdbool.h>
 
-#include "libft.h"
+#include "util/list.h"
 #include "util/vector.h"
 #include "util/window.h"
 

@@ -1,21 +1,20 @@
 #include "snake.h"
-#include <stdio.h>
 
-static int frame = 0;
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
 
 t_snake *new_snake(int size)
 {
 	t_snake *snake;
 
-	snake = ft_memalloc(sizeof(t_snake));
+	snake = malloc(sizeof(t_snake));
 	if (!snake)
-	{
-		printf("Failed to malloc the snake!\n");
 		return NULL;
-	}
+	bzero(snake, sizeof(t_snake));
 	snake->direction = SNAKE_STOP;
 	snake->size = size;
-    snake->tail = ft_lstnew(&snake->pos, sizeof(t_vector2f));
+    snake->tail = lstnew(&snake->pos, sizeof(t_vector2f));
     snake->move_tail = NULL;
     snake->increase_tail = NULL;
 	return snake;
@@ -45,17 +44,14 @@ void update_snake(t_snake *snake)
         default:
             break;
 	}
-    frame++;
 }
 
 void increase_size_snake(t_snake *snake)
 {
     if (snake->increase_tail == NULL)
-    {
         snake->increase_tail = snake->tail;
-    }
     snake->tail_length++;
-	snake->increase_tail->next = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
+	snake->increase_tail->next = lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
 	snake->increase_tail = snake->increase_tail->next;
 }
 
@@ -63,7 +59,7 @@ void move_tail_back(t_snake *snake)
 {
     if (!snake->move_tail)
         snake->move_tail = snake->tail;
-    ft_memcpy(snake->move_tail->content, &snake->pos, sizeof(t_vector2f));
+    memcpy(snake->move_tail->content, &snake->pos, sizeof(t_vector2f));
     snake->move_tail = snake->move_tail->next;
 }
 
@@ -96,31 +92,34 @@ void display_snake(t_snake *snake, t_window *window)
     SDL_RenderFillRect(window->SDLrenderer, &rect);
 }
 
-void reset_snake(t_snake *snake, bool done)
+static void free_tail_snake(t_list *tail)
 {
-    t_list *tail;
     t_list *next;
-    int i = 0;
+    int i;
 
-    snake->move_tail = NULL;
-    snake->increase_tail = NULL;
-    ft_bzero(&snake->pos, sizeof(t_vector2f));
-    change_direction_snake(snake, SNAKE_STOP);
-    if (snake->tail_length == 0)
-        return;
-    tail = snake->tail;
+    i = 0;
     next = tail->next;
     while (tail)
     {
-        free(tail->content);
-        free(tail);
+        lstfree(tail);
         tail = next;
         if (tail)
             next = tail->next;
         i++;
     }
+}
+
+void reset_snake(t_snake *snake, bool done)
+{
+    snake->move_tail = NULL;
+    snake->increase_tail = NULL;
+    bzero(&snake->pos, sizeof(t_vector2f));
+    change_direction_snake(snake, SNAKE_STOP);
+    if (snake->tail_length == 0)
+        return;
+    free_tail_snake(snake->tail);
     if (!done)
-        snake->tail = ft_lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
+        snake->tail = lstnew(&(t_vector2f){-snake->size, -snake->size}, sizeof(t_vector2f));
     else
         snake->tail = NULL;
     snake->tail_length = 0;
@@ -163,7 +162,6 @@ void hit_tail_snake(t_snake *snake)
 void delete_snake(t_snake *snake)
 {
     reset_snake(snake, true);
-	free(snake->tail->content);
-    free(snake->tail);
+	free_tail_snake(snake->tail);
     free(snake);
 }

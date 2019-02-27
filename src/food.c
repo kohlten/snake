@@ -1,23 +1,43 @@
-#include "food.h"
-#include "libft.h"
+/**
+ * @defgroup Food
+ * @{
+ */
 
-#include <sodium.h>
+#include "food.h" // Food struct
 
+#include "util/list.h" // t_list
+
+#include <stdlib.h> // malloc
+#include <strings.h> // bzero
+
+#include <sodium.h> // randombytes_uniform
+#include <SDL.h> // SDL_Rect SDL_SetRenderDrawColor SDL_RenderFillRect
+
+/**
+ * Creates a new food object amd returns it
+ * @param size Size to render the food
+ * @return The new food object
+ */
 t_food *new_food(int size)
 {
     t_food *food;
 
-    food = ft_memalloc(sizeof(t_food));
+    food = malloc(sizeof(t_food));
     if (!food)
-    {
-        printf("Failed to malloc food!\n");
         return NULL;
-    }
+    bzero(food, sizeof(t_food));
     food->eaten = false;
     food->size = size;
     return food;
 }
 
+/**
+ * Chooses a random position. If it is not on the snake or the snake tail, place it.
+ * Otherwise it will continue until it has found a spot to place the food.
+ * @param food The food object
+ * @param snake The snake object
+ * @param window The window object
+ */
 void change_pos_food(t_food *food, t_snake *snake, t_window *window)
 {
     t_vector2f pos;
@@ -27,13 +47,12 @@ void change_pos_food(t_food *food, t_snake *snake, t_window *window)
     int i = 0;
     int j;
 
-    while (true)
+    do
     {
         failed = false;
         tail = snake->tail;
-        pos.x = randombytes_uniform(window->width / food->size) * food->size;
-        pos.y = randombytes_uniform(window->height / food->size) * food->size;
-        printf("%f %f\n", pos.x, pos.y);
+        pos.x = randombytes_uniform((uint32_t)window->width / food->size) * food->size;
+        pos.y = randombytes_uniform((uint32_t)window->height / food->size) * food->size;
         j = 0;
         while (tail)
         {
@@ -46,14 +65,16 @@ void change_pos_food(t_food *food, t_snake *snake, t_window *window)
             tail = tail->next;
             j++;
         }
-        printf("RUNNING %d %d\n", i, j);
-        if (!failed)
-            break;
         i++;
-    }
+    } while (failed);
     food->pos = pos;
 }
 
+/**
+ * Displays the food on the SDL window
+ * @param food The food object
+ * @param window The window object
+ */
 void display_food(t_food *food, t_window *window)
 {
     SDL_Rect rect;
@@ -66,7 +87,15 @@ void display_food(t_food *food, t_window *window)
     SDL_RenderFillRect(window->SDLrenderer, &rect);
 }
 
+/**
+ * Frees the food from memory
+ * @param food The food object
+ */
 void delete_food(t_food *food)
 {
 	free(food);
 }
+
+/**
+ * @}
+ */
