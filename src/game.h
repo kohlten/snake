@@ -11,7 +11,6 @@
 #include "util/fps.h" // t_fps
 #include "util/window.h" // t_window
 #include "util/text/text.h" // t_text
-
 #include "food.h" // t_food
 #include "snake.h" // t_snake
 
@@ -25,19 +24,21 @@ typedef struct s_game
 {
     /** Window struct */
 	t_window	*window;
+	/** How many frames have passed */
 	long		frames;
-	TTF_Font	*font;
-	t_text		*fps_text;
-	t_text		*tail_amount_text;
+	/** Food object */
 	t_food 		*food;
+	/** Snake object */
 	t_snake 	*snake;
+	/** If the game is paused or not */
 	bool 		paused;
+	/** If we are exited yet */
+	bool		done;
 } t_game;
 
 t_game *create_game();
 int init_objects(t_game *game);
 void run(t_game *game);
-void clean_window(t_window *window);
 void clean_game(t_game *game);
 
 #endif

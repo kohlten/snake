@@ -1,3 +1,8 @@
+/**
+ * @defgroup Game
+ * @{
+ */
+
 #include "game.h"
 #include <stdio.h>
 
@@ -10,6 +15,11 @@
 // For windows, SDL2 creates a main (WHY?????)
 #undef main
 
+/**
+ * Entry point of the program. Will create a new game, then it will initialize the game.
+ * Then it will run the game. When the game is complete, it will free the game.
+ * @return
+ */
 int main()
 {
     t_game *game;
@@ -25,3 +35,7 @@ int main()
     clean_game(game);
     return 0;
 }
+
+/**
+ * @}
+ */

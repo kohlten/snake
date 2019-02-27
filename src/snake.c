@@ -1,9 +1,18 @@
+/**
+ * @defgroup Snake
+ * @{
+ */
+
 #include "snake.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <strings.h>
+#include <stdlib.h> // malloc
+#include <strings.h> // bzero
 
+/**
+ * Creates and a new snake object and initializes its values.
+ * @param size Size of the snake in pixels
+ * @return NULL if failed or the snake object
+ */
 t_snake *new_snake(int size)
 {
 	t_snake *snake;
@@ -20,11 +29,20 @@ t_snake *new_snake(int size)
 	return snake;
 }
 
+/**
+ * Changes the directed based off of the values in Snake_Direction
+ * @param snake The snake object
+ * @param direction The direction you want to change to
+ */
 void change_direction_snake(t_snake *snake, Snake_Direction direction)
 {
 	snake->direction = direction;
 }
 
+/**
+ * Updates the snake. Move in the direction we are currently going.
+ * @param snake The snake object
+ */
 void update_snake(t_snake *snake)
 {
 	switch (snake->direction)
@@ -46,6 +64,10 @@ void update_snake(t_snake *snake)
 	}
 }
 
+/**
+ * Increases the size of the snake by allocating a new list object at the end of the snake.
+ * @param snake The snake object
+ */
 void increase_size_snake(t_snake *snake)
 {
     if (snake->increase_tail == NULL)
@@ -55,6 +77,10 @@ void increase_size_snake(t_snake *snake)
 	snake->increase_tail = snake->increase_tail->next;
 }
 
+/**
+ * Moves the snake tail positions one forward
+ * @param snake The snake object
+ */
 void move_tail_back(t_snake *snake)
 {
     if (!snake->move_tail)
@@ -63,6 +89,11 @@ void move_tail_back(t_snake *snake)
     snake->move_tail = snake->move_tail->next;
 }
 
+/**
+ * Displays the snake head and all of the tail nodes.
+ * @param snake The snake object
+ * @param window The window object
+ */
 void display_snake(t_snake *snake, t_window *window)
 {
 	SDL_Rect rect;
@@ -92,6 +123,10 @@ void display_snake(t_snake *snake, t_window *window)
     SDL_RenderFillRect(window->SDLrenderer, &rect);
 }
 
+/**
+ * Frees the snake tail by going through each of the tail nodes and freeing their list.
+ * @param tail The list of tail objects.
+ */
 static void free_tail_snake(t_list *tail)
 {
     t_list *next;
@@ -109,6 +144,11 @@ static void free_tail_snake(t_list *tail)
     }
 }
 
+/**
+ * Resets the snake to the initial position and sets the tail length to 0.
+ * @param snake The snake object
+ * @param done Whether to allocate a new tail or not
+ */
 void reset_snake(t_snake *snake, bool done)
 {
     snake->move_tail = NULL;
@@ -125,6 +165,11 @@ void reset_snake(t_snake *snake, bool done)
     snake->tail_length = 0;
 }
 
+/**
+ * Prevents the snake from leaving the play area.
+ * @param snake The snake object
+ * @param window The window object
+ */
 void contain_snake(t_snake *snake, t_window *window)
 {
     if (snake->pos.x >= window->width  ||
@@ -134,6 +179,10 @@ void contain_snake(t_snake *snake, t_window *window)
         reset_snake(snake, false);
 }
 
+/**
+ * Checks if the snake hit its own tail. If it has, reset the snake.
+ * @param snake The snake object
+ */
 void hit_tail_snake(t_snake *snake)
 {
     t_list *tail;
@@ -159,9 +208,17 @@ void hit_tail_snake(t_snake *snake)
     }
 }
 
+/**
+ * Frees the snake
+ * @param snake The snake object
+ */
 void delete_snake(t_snake *snake)
 {
     reset_snake(snake, true);
 	free_tail_snake(snake->tail);
     free(snake);
 }
+
+/**
+ * @}
+ */

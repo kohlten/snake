@@ -1,17 +1,18 @@
 /**
- * @defgroup Food
+ * @defgroup Game
  * @{
  */
 
 #include "game.h"
 
-//#include "util/text/text_util.h"
-
-#include <stdio.h>
+#include <stdio.h> // printf
 #include <stdlib.h> // malloc
 #include <strings.h> // bzero
 
-// Add config for game
+/**
+ * Creates a new game object and a new window.
+ * @return The game object
+ */
 t_game *create_game()
 {
     t_game *game;
@@ -31,24 +32,16 @@ t_game *create_game()
     return game;
 }
 
-// Seperate this function out
+/**
+ * Initializes the values inside of the game object and creates the food and the snake.
+ * @param game The game object
+ * @return -1 if failed 0 if there are no errors
+ */
 int init_objects(t_game *game)
 {
     int start_time;
-	//t_text *text;
 
     start_time = SDL_GetTicks();
-	//game->font = load_font("../fonts/FreeMono.ttf", 20);
-	//if (!game->font)
-	//	return -1;
-    //game->fps_text = new_text("0", game->window->SDLrenderer, game->font,
-    //    (SDL_Color){255, 255, 255, 255}, (t_vector2i){0, 0});
-    //if (!game->fps_text)
-     //   return -1;
-    //game->tail_amount_text = new_text_font("0", game->window->SDLrenderer, game->font,
-    //    (SDL_Color){255, 255, 255, 255}, (t_vector2i){game->window->width - 50, 0});
-    //if (!game->tail_amount_text)
-    //    return -1;
     game->food = new_food(CELL_SIZE);
     if (!game->food)
         return -1;
@@ -56,28 +49,21 @@ int init_objects(t_game *game)
     if (!game->snake)
         return -1;
     game->paused = false;
+    game->done = false;
     game->frames = 0;
     change_pos_food(game->food, game->snake, game->window);
     printf("INIT: Took %d MS to init!\n", SDL_GetTicks() - start_time);
     return 0;
 }
 
+/**
+ * Updates the snake and the food if the game is not paused.
+ * The snake will move every ten frames.
+ * @param game The game object
+ */
 static void update(t_game *game)
 {
-    //int fps;
-    //char *num;
-
     limit_fps(60);
-    /*fps = calculate_fps();
-    if (fps != -1)
-    {
-        num = ft_itoa(fps);
-        game->fps_text = change_text_string(game->fps_text, game->window->SDLrenderer, num);
-        free(num);
-    }
-    num = ft_itoa(game->snake->tail_length);
-    game->tail_amount_text = change_text_string(game->tail_amount_text, game->window->SDLrenderer, num);
-    free(num);*/
     if (!game->paused)
     {
         if (game->snake->pos.x == game->food->pos.x && game->snake->pos.y == game->food->pos.y)
@@ -95,70 +81,94 @@ static void update(t_game *game)
     }
 }
 
+/**
+ * Displays the food and the snake to the widow
+ * @param game The game object
+ */
 static void display(t_game *game)
 {
     SDL_SetRenderDrawColor(game->window->SDLrenderer, 0, 0, 0, 255);
     SDL_RenderClear(game->window->SDLrenderer);
     display_food(game->food, game->window);
     display_snake(game->snake, game->window);
-    //render_text(game->fps_text, game->window->SDLrenderer, NULL);
-    //render_text(game->tail_amount_text, game->window->SDLrenderer, NULL);
     SDL_RenderPresent(game->window->SDLrenderer);
     game->frames++;
 }
 
-// Take events into a seperate function
-void run(t_game *game)
+/**
+ * Gets events from the window.
+ * If it's wasd, move the snake in the direction of the key pressed.
+ * If r, it will reset the snake to the initial position.
+ * If p, it will pause the game
+ * If esc, it will exit the game
+ * @param game
+ */
+static void events(t_game *game)
 {
     SDL_Event e;
-    bool done = false;
 
-    while (!done)
-    {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT)
-                done = true;
-            if (e.type == SDL_KEYDOWN)
+    while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT)
+            game->done = true;
+        if (e.type == SDL_KEYDOWN)
+        {
+            switch (e.key.keysym.sym)
             {
-                switch (e.key.keysym.sym)
-                {
-                    case SDLK_w:
-                        change_direction_snake(game->snake, SNAKE_UP);
-                        break;
-                    case SDLK_s:
-                        change_direction_snake(game->snake, SNAKE_DOWN);
-                        break;
-                    case SDLK_a:
-                        change_direction_snake(game->snake, SNAKE_LEFT);
-                        break;
-                    case SDLK_d:
-                        change_direction_snake(game->snake, SNAKE_RIGHT);
-                        break;
-                    case SDLK_r:
-                        reset_snake(game->snake, false);
-                        break;
-                    case SDLK_p:
-                        game->paused = !game->paused;
-                        break;
-                    case SDLK_ESCAPE:
-                        done = true;
-                        break;
-                    default:
-                        break;
-                }
+                case SDLK_w:
+                    change_direction_snake(game->snake, SNAKE_UP);
+                    break;
+                case SDLK_s:
+                    change_direction_snake(game->snake, SNAKE_DOWN);
+                    break;
+                case SDLK_a:
+                    change_direction_snake(game->snake, SNAKE_LEFT);
+                    break;
+                case SDLK_d:
+                    change_direction_snake(game->snake, SNAKE_RIGHT);
+                    break;
+                case SDLK_r:
+                    reset_snake(game->snake, false);
+                    break;
+                case SDLK_p:
+                    game->paused = !game->paused;
+                    break;
+                case SDLK_ESCAPE:
+                    game->done = true;
+                    break;
+                default:
+                    break;
             }
         }
+    }
+}
+
+/**
+ * Runs the main game loop calling the events, update and display functions.
+ * @param game The game object
+ */
+void run(t_game *game)
+{
+    while (!game->done)
+    {
+        events(game);
         update(game);
         display(game);
         game->frames++;
     }
 }
 
+/**
+ * Frees all objects in the game object and frees the object.
+ * @param game
+ */
 void clean_game(t_game *game)
 {
     free_window(game->window);
     delete_food(game->food);
     delete_snake(game->snake);
-    //free_text(game->fps_text);
     free(game);
 }
+
+/**
+* @}
+*/
